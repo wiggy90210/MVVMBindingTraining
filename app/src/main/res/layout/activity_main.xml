@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="androidx.core.content.ContextCompat"/>
         <variable
             name="viewmodel"
             type="com.example.mvvmbindingtraining.MainViewModel"/>
@@ -48,6 +49,8 @@
             android:layout_margin="8dp"
             android:hint="Type an answer"
             android:text="@={viewmodel.editTextContent}"
+            android:gravity="center_horizontal"
+            android:singleLine="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +66,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="@{viewmodel.textColor}"
+            android:textColor="@{ContextCompat.getColor(context, viewmodel.textColor)}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/etAnswer"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,6 +82,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat"
             android:textSize="28sp"
             android:textStyle="bold"
+            android:visibility="@{viewmodel.rightAnswerVisibility}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvUserAnswer"
             app:layout_constraintEnd_toEndOf="parent"
@@ -101,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:onClick="@{() -> viewmodel.onChangeRandomWord()}"
+            android:onClick="@{() -> viewmodel.checkAnswer()}"
             android:text="Check answer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

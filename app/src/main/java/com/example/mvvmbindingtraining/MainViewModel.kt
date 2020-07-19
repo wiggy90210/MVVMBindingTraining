@@ -1,11 +1,13 @@
 package com.example.mvvmbindingtraining
 
 import androidx.databinding.Bindable
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class MainViewModel : ViewModel() {
+class MainViewModel : ViewModel(), Observable {
 
     val currentRandomWord: LiveData<String>
         get() = Repo.currentRandomWord
@@ -13,25 +15,43 @@ class MainViewModel : ViewModel() {
         get() = Repo.currentRandomAnswer
     val textColor: LiveData<Int>
         get() = Repo.textColor
+    val rightAnswerVisibility: LiveData<Int>
+        get() = Repo.rightAnswerVisibility
+    val displayedEditTextContent: LiveData<String>
+        get() = Repo.displayEditTextContent
 
-    fun onChangeRandomWord() = Repo.changeCurrentRandomWord()
+    fun onChangeRandomWord() {
+        clearEditText()
+        Repo.changeCurrentRandomWord()
+    }
 
     @Bindable
     val editTextContent = MutableLiveData<String>()
 
-    private val _displayEditTextContent = MutableLiveData<String>()
-    val displayedEditTextContent: LiveData<String>
-        get() = _displayEditTextContent
+    fun clearEditText() {
+        editTextContent.value = ""
+    }
+
 
     fun onDisplayEditTextContentClick() {
-        _displayEditTextContent.value = editTextContent.value
-        checkAnswer()
+        Repo.setUserAnswer(editTextContent.value)
     }
 
     fun checkAnswer() {
-        Repo.changeColor(displayedEditTextContent == currentRandomAnswer)
+        onDisplayEditTextContentClick()     // przypisuję wartość do prywatnej zmiennej
+        Repo.changeColor(displayedEditTextContent.value.equals(currentRandomAnswer.value, ignoreCase = true))
+        Repo.showRightAnswer()
     }
-    fun onSelectRandomEditText() {
 
+
+
+    private val callbacks: PropertyChangeRegistry by lazy { PropertyChangeRegistry()}
+
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+        callbacks.add(callback)
+    }
+
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+        callbacks.remove(callback)
     }
 }
